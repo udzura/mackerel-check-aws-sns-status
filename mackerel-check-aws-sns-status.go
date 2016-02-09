@@ -12,7 +12,9 @@ import (
 )
 
 var opts struct {
-	ARN string `short:"a" long:"arn" required:"true" description:"Platform application ARN to check"`
+	ARN               string `short:"a" long:"arn" required:"true" description:"Platform application ARN to check"`
+	WarnThreshold     int    `short:"w" long:"warn" required:"false" default:"30" description:"A threshold to warn cert expiration (in days)"`
+	CriticalThreshold int    `short:"c" long:"critical" required:"false" default:"14" description:"A threshold to judge critical for cert expiration (in days)"`
 }
 
 func main() {
@@ -49,11 +51,13 @@ func run() {
 		case time.Now().After(expireAt):
 			fmt.Fprintf(os.Stderr, "Cert is now expired: %s\n", expireAt)
 			os.Exit(3)
-		case time.Now().AddDate(0, 0, 14).After(expireAt):
-			fmt.Fprintf(os.Stderr, "Cert is going to expire in 14 days: %s\n", expireAt)
+		case time.Now().AddDate(0, 0, opts.CriticalThreshold).After(expireAt):
+			duration := time.Now().Sub(expireAt) / (24 * time.Hour) * -1
+			fmt.Fprintf(os.Stderr, "Cert is going to expire in %d days: %s\n", duration, expireAt)
 			os.Exit(2)
-		case time.Now().AddDate(0, 0, 30).After(expireAt):
-			fmt.Fprintf(os.Stderr, "Cert is going to expire in 30 days: %s\n", expireAt)
+		case time.Now().AddDate(0, 0, opts.WarnThreshold).After(expireAt):
+			duration := time.Now().Sub(expireAt) / (24 * time.Hour) * -1
+			fmt.Fprintf(os.Stderr, "Cert is going to expire in %d days: %s\n", duration, expireAt)
 			os.Exit(1)
 		default:
 			fmt.Fprintf(os.Stderr, "Cert is OK: %s\n", expireAt)
