@@ -24,3 +24,4 @@ _testmain.go
 *.prof
 
 /mackerel-check-aws-sns-status
+/pkg/
