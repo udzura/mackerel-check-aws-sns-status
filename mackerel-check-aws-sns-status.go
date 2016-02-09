@@ -12,10 +12,11 @@ import (
 )
 
 var opts struct {
-	ShowVersion       bool   `short:"v" long:"version" default:"false" required:"false" description:"Show version"`
+	ShowVersion       bool   `short:"v" long:"version" default:"false" description:"Show version"`
 	ARN               string `short:"a" long:"arn" default:"" description:"Platform application ARN to check"`
 	WarnThreshold     int    `short:"w" long:"warn" default:"30" description:"A threshold to warn cert expiration (in days)"`
 	CriticalThreshold int    `short:"c" long:"critical" default:"14" description:"A threshold to judge critical for cert expiration (in days)"`
+	ForceUTC          bool   `short:"u" long:"utc" default:"false" description:"Show log time in UTC"`
 }
 
 const Version = "0.1.0"
@@ -58,6 +59,9 @@ func run() {
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %s\n", err.Error())
 			os.Exit(3)
+		}
+		if !opts.ForceUTC {
+			expireAt = expireAt.Local()
 		}
 
 		switch {
