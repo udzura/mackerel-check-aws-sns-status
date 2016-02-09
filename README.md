@@ -16,7 +16,10 @@ Usage:
   mackerel-check-aws-sns-status [OPTIONS]
 
 Application Options:
-  -a, --arn=  Platform application ARN to check
+  -v, --version   Show version (default: false)
+  -a, --arn=      Platform application ARN to check
+  -w, --warn=     A threshold to warn cert expiration (in days) (default: 30)
+  -c, --critical= A threshold to judge critical for cert expiration (in days) (default: 14)
 
 Help Options:
   -h, --help  Show this help message
