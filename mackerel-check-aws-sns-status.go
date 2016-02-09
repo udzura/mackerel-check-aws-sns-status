@@ -12,10 +12,13 @@ import (
 )
 
 var opts struct {
-	ARN               string `short:"a" long:"arn" required:"true" description:"Platform application ARN to check"`
-	WarnThreshold     int    `short:"w" long:"warn" required:"false" default:"30" description:"A threshold to warn cert expiration (in days)"`
-	CriticalThreshold int    `short:"c" long:"critical" required:"false" default:"14" description:"A threshold to judge critical for cert expiration (in days)"`
+	ShowVersion       bool   `short:"v" long:"version" default:"false" required:"false" description:"Show version"`
+	ARN               string `short:"a" long:"arn" default:"" description:"Platform application ARN to check"`
+	WarnThreshold     int    `short:"w" long:"warn" default:"30" description:"A threshold to warn cert expiration (in days)"`
+	CriticalThreshold int    `short:"c" long:"critical" default:"14" description:"A threshold to judge critical for cert expiration (in days)"`
 }
+
+const Version = "0.1.0"
 
 func main() {
 	run()
@@ -24,6 +27,16 @@ func main() {
 func run() {
 	_, err := flags.ParseArgs(&opts, os.Args[1:])
 	if err != nil {
+		os.Exit(127)
+	}
+
+	if opts.ShowVersion {
+		fmt.Printf("version: %s\n", Version)
+		os.Exit(0)
+	}
+
+	if opts.ARN == "" {
+		fmt.Fprintf(os.Stderr, "--arn or -a must be specified\n")
 		os.Exit(127)
 	}
 
