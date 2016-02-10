@@ -19,7 +19,7 @@ var opts struct {
 	ForceUTC          bool   `short:"u" long:"utc" default:"false" description:"Show log time in UTC"`
 }
 
-const Version = "0.1.1"
+const Version = "0.1.2"
 
 func main() {
 	run()
