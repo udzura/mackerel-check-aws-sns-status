@@ -37,7 +37,7 @@ func run() {
 	}
 
 	if opts.ARN == "" {
-		fmt.Fprintf(os.Stderr, "--arn or -a must be specified\n")
+		fmt.Fprintf(os.Stdout, "--arn or -a must be specified\n")
 		os.Exit(127)
 	}
 
@@ -48,7 +48,7 @@ func run() {
 
 	resp, err := svc.GetPlatformApplicationAttributes(params)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %s\n", err.Error())
+		fmt.Fprintf(os.Stdout, "Error: %s\n", err.Error())
 		os.Exit(3)
 	}
 
@@ -57,7 +57,7 @@ func run() {
 	if val, ok := attr["AppleCertificateExpirationDate"]; ok {
 		expireAt, err := time.Parse("2006-01-02T15:04:05Z", *val)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %s\n", err.Error())
+			fmt.Fprintf(os.Stdout, "Error: %s\n", err.Error())
 			os.Exit(3)
 		}
 		if !opts.ForceUTC {
@@ -66,18 +66,18 @@ func run() {
 
 		switch {
 		case time.Now().After(expireAt):
-			fmt.Fprintf(os.Stderr, "Cert is now expired: %s\n", expireAt)
+			fmt.Fprintf(os.Stdout, "Cert is now expired: %s\n", expireAt)
 			os.Exit(3)
 		case time.Now().AddDate(0, 0, opts.CriticalThreshold).After(expireAt):
 			duration := time.Now().Sub(expireAt) / (24 * time.Hour) * -1
-			fmt.Fprintf(os.Stderr, "Cert is going to expire in %d days: %s\n", duration, expireAt)
+			fmt.Fprintf(os.Stdout, "Cert is going to expire in %d days: %s\n", duration, expireAt)
 			os.Exit(2)
 		case time.Now().AddDate(0, 0, opts.WarnThreshold).After(expireAt):
 			duration := time.Now().Sub(expireAt) / (24 * time.Hour) * -1
-			fmt.Fprintf(os.Stderr, "Cert is going to expire in %d days: %s\n", duration, expireAt)
+			fmt.Fprintf(os.Stdout, "Cert is going to expire in %d days: %s\n", duration, expireAt)
 			os.Exit(1)
 		default:
-			fmt.Fprintf(os.Stderr, "Cert is OK: %s\n", expireAt)
+			fmt.Fprintf(os.Stdout, "Cert is OK: %s\n", expireAt)
 			os.Exit(0)
 		}
 	}
@@ -85,11 +85,11 @@ func run() {
 	if val, ok := attr["Enabled"]; ok {
 		enabled := *val
 		if enabled != "true" {
-			fmt.Fprintf(os.Stderr, "Endpoint is disabled!!\n")
+			fmt.Fprintf(os.Stdout, "Endpoint is disabled!!\n")
 			os.Exit(3)
 		}
 	}
 
-	fmt.Fprintf(os.Stderr, "Endpoint is enabled\n")
+	fmt.Fprintf(os.Stdout, "Endpoint is enabled\n")
 	os.Exit(0)
 }
